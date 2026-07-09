@@ -1,31 +1,28 @@
-# include "piece.h"
+#include <iostream>
+#include "piece.h"
+
 
 using namespace std;
-/*
-chess :: Piece :: Piece( char item , char color , int square_rank , int square_file )
-{
-	player = color;
-	
-};
-*/
 
-char chess :: Piece :: get_id()
+char chess :: Piece :: get_id() const
 {
-	
 	return id ;
-}
+};
 
-char chess :: Piece :: get_player()
+char chess :: Piece :: get_player() const
 {
 	return player ;
 }
 
-/*
-//using namespace chess;
+bool chess :: Piece :: Has_moved() const
+{
+	return status;
+};
 
-int main() {
-	cout<<"Hello World!" <<endl;
-	chess::Piece* temp = new chess::Piece('K', 'W');
-	//cout<<temp->get_id()<<endl;
-}
+void chess :: Piece :: Deployed()
+{
+	status = true;
+};
 
+
+// <------------------------------------------   END   ---------------------------------------------->

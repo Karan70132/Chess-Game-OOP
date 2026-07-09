@@ -1,8 +1,9 @@
-#include "helpers.h"
+#include <bits/stdc++.h>
+#include "game_board.h"
 
 using namespace std;
 
-unordered_map<string, string> chess:: map = {
+unordered_map<string, string> symbols = {
     // White pieces
     
     {"WK",u8"♔"} ,
@@ -21,38 +22,169 @@ unordered_map<string, string> chess:: map = {
     {"BP" , u8"♟"}
 };
 
-const string chess :: RESET = "\033[0m";
-const string chess :: DARK  = "\033[100;98m";  // Gray background, White text
-const string chess :: LIGHT = "\033[97m";         // Bright white
-	
-void chess :: error_handle()
+
+const string RESET = "\033[0m";
+const string DARK  = "\033[100;98m";  // Gray background, White text
+const string LIGHT = "\033[97m";         // Bright white
+
+void Help()
 {
-	cout<<"COMMAND NOT FOUND! "<<endl;
+
+    cout << "\n---------------------------- CHESS GAME GUIDE -------------------------------------\n\n";
+
+    cout << "MOVE FORMAT\n";
+    cout << "  • Enter every move as : A2 to A4\n";
+    cout << "  • Columns : A - H\n";
+    cout << "  • Rows    : 1 - 8\n";
+    cout << "  • Example : E2 to E4\n\n";
+
+    cout << "SPECIAL COMMANDS\n";
+    cout << "  • resign      - Concede the game.\n";
+    cout << "  • offer draw  - Offer a draw to your opponent.\n\n";
+
+    cout << "GAME FEATURES\n";
+    cout << "  • Legal move validation for every piece.\n";
+    cout << "  • Check and Checkmate detection.\n";
+    cout << "  • Stalemate detection.\n";
+    cout << "  • Kingside and Queenside castling.\n";
+    cout << "  • Automatic pawn promotion.\n";
+    cout << "  • Captured piece tracking.\n";
+    cout << "  • Move history recording.\n";
+    cout << "  • Board automatically rotates for the current player.\n\n";
+
+    cout << "NOTES\n";
+    cout << "  • A move that leaves your own King in check is rejected.\n";
+    cout << "  • If a move is rejected you still have chance to type a valid move if possible.\n";
+    cout << "  • Castling is allowed only if all official conditions are satisfied.\n";
+    cout << "  • Promotion choices: Queen, Rook, Bishop or Knight.\n";
+    cout << "  • Follow standard chess rules throughout the game.\n";
+
+    cout << "\n-----------------------------------  xxx  ---------------------------------------------\n";
+    cout << "\n\n\n\n\n";
+    
 };
 
-
-bool chess :: correct_format(string& moveInput )
-{	
-	if(moveInput.size() != 8 || moveInput.substr(2,4) != " to "){
-		return false;
-	}
-	if(moveInput[0]<'A' || moveInput[0]>'H' || moveInput[0]<'1' || moveInput[0]>'8' ){
-		return false;
-	}
-	if(moveInput[6]<'A' || moveInput[6]>'H' || moveInput[7]<'1' || moveInput[7]>'8' ){
-		return false;
-	}
-	return true;
-};
-
-void chess :: Help()
+bool Linear_Check(vector<vector< chess :: Piece* >>& Board, int krow, int kcol, int dr, int dc, char player)
 {
-	cout<< "This implementation uses simplified chess rules. Castling is not supported. "<<endl;
-	cout<<"Both players will have to make a valid move to proceed further"<<endl;
-	cout<<"Each player has the option to \"resign\" , offer \" draw\" and \"flip\" only when it's player's turn"<<endl;
-	cout<<"You have to make a move in a specified format "<<endl;
-	cout<<"example: \"A5 to A6\" take not of initial positions of moving piece and it's final position and then enter it"<<endl;
-	cout<<"You can also type help to access the ruke and typing format on the player's turn"<<endl;
-	
+    int trow = krow + dr;
+    int tcol = kcol + dc;
+    
+    while (trow >= 0 && trow < 8 && tcol >= 0 && tcol < 8)
+    {
+        chess::Piece* current = Board[trow][tcol];
+        
+        if (current == nullptr) 
+        {
+            trow += dr;
+            tcol += dc;
+        } 
+        else 
+        {
+            char current_piece_player = current->get_player();
+            if (current_piece_player == player) 
+            {
+                break; 
+            } 
+            else 
+            {
+                char current_piece_id = current->get_id();
+                if (current_piece_id == 'Q' || current_piece_id == 'R') 
+                {
+                    return true;
+                } 
+                else if (max(abs(trow - krow),abs(tcol - kcol)) == 1 && current_piece_id == 'K') 
+                {
+                    return true;
+                } 
+                else 
+                {
+                    break; 
+                }
+            }
+        }
+    }
+    return false;
 }
 
+bool Diagonal_Check(vector<vector< chess :: Piece* >>& Board, int krow, int kcol, int dr, int dc, char player)
+{
+    int trow = krow + dr;
+    int tcol = kcol + dc;
+    
+    while (trow >= 0 && trow < 8 && tcol >= 0 && tcol < 8)
+    {
+        chess::Piece* current = Board[trow][tcol];
+        
+        if (current == nullptr) 
+        {
+            trow += dr;
+            tcol += dc;
+        } 
+        else 
+        {
+            char current_piece_player = current->get_player();
+            if (current_piece_player == player) 
+            {
+                break; 
+            } 
+            else 
+            {
+                char current_piece_id = current->get_id();
+                if (current_piece_id == 'Q' || current_piece_id == 'B') 
+                {
+                    return true;
+                } 
+                else if (abs(trow - krow) == 1 && abs(tcol - kcol) == 1) 
+                {
+                    if (current_piece_id == 'K') 
+                    {
+                        return true;
+                    }
+                    if (current_piece_id == 'P') 
+                    {
+                        if (dr == 1 && current_piece_player == 'B') return true;
+                        if (dr == -1 && current_piece_player == 'W') return true;
+                    }
+                    break;
+                } 
+                else 
+                {
+                    break; 
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+bool Knight_Check(vector<vector< chess:: Piece*>>& Board, int krow, int kcol, char player)
+{
+    for (int jump_row = max(0, krow - 2); jump_row <= min(7, krow + 2); jump_row++) 
+    {
+        for (int jump_col = max(0, kcol - 2); jump_col <= min(7, kcol + 2); jump_col++) 
+        {
+            if (abs(jump_row - krow) + abs(jump_col - kcol) == 3 && abs(jump_row - krow) * abs(jump_col - kcol) != 0) 
+            {
+                chess::Piece* current = Board[jump_row][jump_col];
+                
+                if (current == nullptr) 
+                {
+                    continue;
+                } 
+                else 
+                {
+                    char current_piece_player = current->get_player();
+                    char current_piece_id = current->get_id();
+                    if (current_piece_player != player && current_piece_id == 'N') 
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+// <------------------------------------------   END   ---------------------------------------------->

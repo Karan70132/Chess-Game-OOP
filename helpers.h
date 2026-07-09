@@ -1,29 +1,29 @@
-#ifndef HELPERS_h
-#define HELPERS_h
+#ifndef HELPERS_H
+#define HELPERS_H
+
+#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <utility>
+#include <unordered_map>
+#include "piece.h"
 
 
-#include <bits/stdc++.h>
-// #include <windows.h>
+bool Linear_Check ( std::vector<std::vector<chess::Piece*>>& Board, int krow, int kcol, int dr, int dc, char player );
 
-namespace chess
-{
+bool Diagonal_Check (std::vector<std::vector<chess::Piece*>>& Board, int krow, int kcol, int dr, int dc, char player);
 
-	extern std:: unordered_map< std :: string , std :: string > map ;
+bool Knight_Check ( std::vector<std::vector<chess::Piece*>>& Board, int krow, int kcol, char player );
 
-	extern const std:: string RESET ;
-	extern const std:: string DARK  ;  // Gray background, White text
-	extern const std:: string LIGHT ;         // Bright white
-	
-	/*
-	extern const std:: string White_label = "White";
-	extern const std:: string Black_label = "Black";
-	*/
-	
-	void error_handle() ;
 
-	bool correct_format ( std :: string& moveInput );
+extern std:: unordered_map< std :: string , std :: string > symbols ;
 
-	void Help() ;
-}
+
+extern const std:: string RESET ;
+extern const std:: string DARK  ;  	// Gray background, White text
+extern const std:: string LIGHT ;         // Bright white
+
+void Help();
 
 #endif

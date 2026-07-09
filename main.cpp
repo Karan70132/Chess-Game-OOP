@@ -1,14 +1,19 @@
-#include "board.h"
+#include <bits/stdc++.h>
+
+#include "piece.h"
+#include "chess_arsenal.h"
+#include "helpers.h"
+#include "game_board.h"
+
+using namespace chess ;
 
 
-
-
-int main(void){
-
+int main (void)
+{
     // SetConsoleOutputCP(CP_UTF8);
     // SetConsoleCP(CP_UTF8);
 
-    cout<< R"(
+    std :: cout<< R"(
 
         ██████╗██╗  ██╗███████╗███████╗███████╗
         ██╔════╝██║  ██║██╔════╝██╔════╝██╔════╝
@@ -26,51 +31,67 @@ int main(void){
     
     while (true)
     {
-        string choice;
-        cout << "Would you like to start a new game? (Y/N): ";
-        cin>> choice;
+        std :: string choice;
+        std :: cout << "Would you like to start a new game? (Y/N): ";
+        std :: cin>> choice;
 
         if (choice == "Y" || choice == "y" )
         {
-            cout << "\nLoading the chessboard...\n";
+            std :: cout << "\nLoading the chessboard...\n";
             break;
         }
         else
         {
-            cout << "\nThanks for visiting. Goodbye!\n";
-            continue;
+            std :: cout << "\nThanks for visiting. Goodbye!\n";
+            
+            return 0 ;
         }
     }
 	
-    cout<<"Let's start the game!"<endl;
-    cout<<"Rules and regulation :- "<<endl;
+    std :: cout<<"Let's start the game!"<< std :: endl;
     Help();
+    
     while(true){
     	
     	Chess_Board  Game;
     	
+    	Game.start_message();
+    
     	while(!Game.Is_Game_Over())
     	{
-    		Game.Whites_Turn();
-    		if(Game.Is_Game_Over())break;
+    		Game.make_move();
     		
-    		Game.Blacks_Turn();
+    		if ( Game.Is_checkmate('W')  )
+    		{
+    				Game.end_message_win("Black");
+    				break;
+    		}
+    		else if ( Game.Is_checkmate('B') )
+    		{
+    				Game.end_message_win("White");
+    				break;
+    		}
+    		else if ( Game.Is_stalemate('W') || Game.Is_stalemate('B') )
+    		{
+    				Game.end_message_draw();
+    				break;
+    		}
+    		
+    		Game.alternate_turn();
     	}
     	
-    	cout<<"<-------------  x  ---------->"
-    	string play ;
-    	cout << "Would you like to play a new game? (Y/N): ";
-        cin>> play;
+    	std :: cout<<"<------------------------------  END  ------------------------------------->\n";
+    	std :: string play ;
+    	std :: cout << "Would you like to play a new game? (Y/N): ";
+        std :: cin>> play;
         if(play == "Y" || play == "y"){
         	continue;
         }
         else break;
     }
     
-    cout<<"Thanks for Playing the Game Visit again"<<endl;
+    std :: cout<<"Thanks for playing the game visit again !"<< std :: endl;
 
-    
 
     return 0;
 }
-
